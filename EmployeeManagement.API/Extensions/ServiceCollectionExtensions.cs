@@ -79,6 +79,9 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IEmployeeRepository, EmployeeRepository>();
         services.AddScoped<IDepartmentRepository, DepartmentRepository>();
 
+        // Application Services
+        services.AddScoped<EmployeeManagement.Application.Services.IAuthService, EmployeeManagement.Application.Services.AuthService>();
+
         return services;
     }
 }

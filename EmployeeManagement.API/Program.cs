@@ -1,4 +1,7 @@
 using EmployeeManagement.API.Extensions;
+using EmployeeManagement.Domain.Entities;
+using EmployeeManagement.Infrastructure.Seeding;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,7 +12,17 @@ builder.Services.AddEndpointsApiExplorer();
 // Add application services (DbContext, Identity, JWT, Swagger, etc.)
 builder.Services.AddApplicationServices(builder.Configuration);
 
+// Register DataSeeder
+builder.Services.AddScoped<DataSeeder>();
+
 var app = builder.Build();
+
+// Seed data
+using (var scope = app.Services.CreateScope())
+{
+    var seeder = scope.ServiceProvider.GetRequiredService<DataSeeder>();
+    await seeder.SeedAsync();
+}
 
 // Configure the HTTP request pipeline
 if (app.Environment.IsDevelopment())
