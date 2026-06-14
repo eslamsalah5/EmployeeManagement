@@ -12,5 +12,14 @@ public static class MappingConfig
         TypeAdapterConfig<Department, DepartmentDto>.NewConfig();
         TypeAdapterConfig<CreateDepartmentDto, Department>.NewConfig()
             .Map(dest => dest.CreatedAt, src => DateTime.UtcNow);
+
+        // Employee mappings
+        TypeAdapterConfig<Employee, EmployeeDto>.NewConfig()
+            .Map(dest => dest.DepartmentName, src => src.Department != null ? src.Department.Name : string.Empty);
+
+        TypeAdapterConfig<CreateEmployeeDto, Employee>.NewConfig()
+            .Map(dest => dest.IsActive, src => true);
+
+        TypeAdapterConfig<UpdateEmployeeDto, Employee>.NewConfig();
     }
 }

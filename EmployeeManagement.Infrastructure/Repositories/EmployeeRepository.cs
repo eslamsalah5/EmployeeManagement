@@ -27,4 +27,11 @@ public class EmployeeRepository : GenericRepository<Employee>, IEmployeeReposito
 
         return await query.ToListAsync();
     }
+
+    public async Task<Employee?> GetByIdWithDepartmentAsync(int id)
+    {
+        return await _dbSet
+            .Include(e => e.Department)
+            .FirstOrDefaultAsync(e => e.Id == id);
+    }
 }

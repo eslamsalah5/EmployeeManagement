@@ -104,6 +104,7 @@ public static class ServiceCollectionExtensions
         // Application Services
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IDepartmentService, DepartmentService>();
+        services.AddScoped<IEmployeeService, EmployeeService>();
 
         // Filters
         services.AddScoped<ValidationFilter>();
