@@ -1,4 +1,7 @@
 using EmployeeManagement.API.Extensions;
+using EmployeeManagement.API.Filters;
+using EmployeeManagement.API.Middleware;
+using EmployeeManagement.Application.Mapping;
 using EmployeeManagement.Domain.Entities;
 using EmployeeManagement.Infrastructure.Seeding;
 using Microsoft.AspNetCore.Identity;
@@ -6,7 +9,10 @@ using Microsoft.AspNetCore.Identity;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container
-builder.Services.AddControllers();
+builder.Services.AddControllers(options =>
+{
+    options.Filters.Add<ValidationFilter>();
+});
 builder.Services.AddEndpointsApiExplorer();
 
 // Add application services (DbContext, Identity, JWT, Swagger, etc.)
@@ -14,6 +20,9 @@ builder.Services.AddApplicationServices(builder.Configuration);
 
 // Register DataSeeder
 builder.Services.AddScoped<DataSeeder>();
+
+// Configure Mapster
+MappingConfig.RegisterMaps();
 
 var app = builder.Build();
 
@@ -25,6 +34,9 @@ using (var scope = app.Services.CreateScope())
 }
 
 // Configure the HTTP request pipeline
+// Global exception handler must be first
+app.UseMiddleware<ExceptionHandlingMiddleware>();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

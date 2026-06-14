@@ -1,4 +1,7 @@
 using System.Text;
+using EmployeeManagement.API.Filters;
+using EmployeeManagement.Application.Services;
+using EmployeeManagement.Application.Validators;
 using EmployeeManagement.Domain.Entities;
 using EmployeeManagement.Domain.Interfaces;
 using EmployeeManagement.Infrastructure.Data;
@@ -8,6 +11,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi;
 
 namespace EmployeeManagement.API.Extensions;
 
@@ -67,12 +71,30 @@ public static class ServiceCollectionExtensions
         });
 
         // Swagger with JWT support
-        services.AddSwaggerGen();
+        services.AddSwaggerGen(options =>
+        {
+            options.SwaggerDoc("v1", new OpenApiInfo { Title = "Employee Management API", Version = "v1" });
+            
+            options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            {
+                Type = SecuritySchemeType.Http,
+                Scheme = "bearer",
+                BearerFormat = "JWT",
+                In = ParameterLocation.Header,
+                Name = "Authorization",
+                Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\""
+            });
+
+            options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
+            {
+                [new OpenApiSecuritySchemeReference("Bearer", document)] = new List<string>()
+            });
+        });
 
         // Mapster (no additional configuration needed for basic use)
 
         // FluentValidation
-        services.AddValidatorsFromAssemblyContaining<Program>();
+        services.AddValidatorsFromAssemblyContaining<CreateDepartmentDtoValidator>();
 
         // Unit of Work and Repositories
         services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -80,7 +102,11 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IDepartmentRepository, DepartmentRepository>();
 
         // Application Services
-        services.AddScoped<EmployeeManagement.Application.Services.IAuthService, EmployeeManagement.Application.Services.AuthService>();
+        services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<IDepartmentService, DepartmentService>();
+
+        // Filters
+        services.AddScoped<ValidationFilter>();
 
         return services;
     }
