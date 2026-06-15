@@ -37,14 +37,11 @@ using (var scope = app.Services.CreateScope())
 // Global exception handler must be first
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
-if (app.Environment.IsDevelopment())
+app.UseSwagger();
+app.UseSwaggerUI(c =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI(c =>
-    {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Employee Management API V1");
-    });
-}
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Employee Management API V1");
+});
 
 app.UseHttpsRedirection();
 

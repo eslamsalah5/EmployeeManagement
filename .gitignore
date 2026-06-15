@@ -78,6 +78,13 @@ _ReSharper*/
 !**/appsettings.json
 !**/appsettings.Development.json
 
+# Publish profiles and deployment credentials
+**/Properties/PublishProfiles/
+*.publishSettings
+
+# dotnet tools manifest (local, not needed in repo)
+dotnet-tools.json
+
 # Database
 *.mdf
 *.ldf

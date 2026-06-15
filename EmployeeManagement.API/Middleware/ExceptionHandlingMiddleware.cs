@@ -1,6 +1,7 @@
 using System.Net;
 using System.Text.Json;
 using EmployeeManagement.API.Wrappers;
+using Microsoft.EntityFrameworkCore;
 
 namespace EmployeeManagement.API.Middleware;
 
@@ -38,6 +39,8 @@ public class ExceptionHandlingMiddleware
             ArgumentException => (HttpStatusCode.BadRequest, exception.Message),
             KeyNotFoundException => (HttpStatusCode.NotFound, "The requested resource was not found."),
             UnauthorizedAccessException => (HttpStatusCode.Unauthorized, "You are not authorized to perform this action."),
+            DbUpdateException dbEx when dbEx.InnerException?.Message.Contains("REFERENCE constraint") == true => (HttpStatusCode.BadRequest, "Cannot delete this record because it has other records related to it."),
+            DbUpdateException => (HttpStatusCode.BadRequest, "A database error occurred while updating the records."),
             _ => (HttpStatusCode.InternalServerError, "An unexpected error occurred. Please try again later.")
         };
 
